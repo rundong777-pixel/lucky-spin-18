@@ -77,6 +77,31 @@
             box-shadow: 0 2px 5px rgba(0,0,0,0.3);
         }
         
+        /* 皇后棋子 */
+        .queen-piece {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            font-size: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 50;
+            transition: all 0.3s ease-out;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
+            pointer-events: none;
+        }
+        
+        .queen-piece.jumping {
+            animation: jump 0.3s ease-out;
+        }
+        
+        @keyframes jump {
+            0% { transform: scale(1) translateY(0); }
+            50% { transform: scale(1.2) translateY(-10px); }
+            100% { transform: scale(1) translateY(0); }
+        }
+        
         .cell.normal { background: #fff; color: #333; }
         .cell.empty { background: #e0e0e0; color: #666; }
         .cell.bonus { background: #ffd700; color: #000; }
@@ -477,7 +502,22 @@
                 el.innerHTML = c.t === 'prize' ? '🎁' : `<div class="cell-num">${c.id}</div><div class="cell-points">${c.p > 0 ? '+' + c.p : c.p}</div>`;
                 board.appendChild(el);
             });
-            highlight();
+            
+            // 创建皇后棋子
+            const queen = document.createElement('div');
+            queen.className = 'queen-piece';
+            queen.id = 'queen';
+            queen.innerHTML = '♛';
+            board.appendChild(queen);
+            
+            updateQueenPosition();
+        }
+        
+        function updateQueenPosition() {
+            const queen = document.getElementById('queen');
+            const cellPos = getPos(pos);
+            queen.style.left = (cellPos.x + 10) + 'px';
+            queen.style.top = (cellPos.y + 5) + 'px';
         }
         
         function highlight() {
@@ -568,10 +608,20 @@
         }
         
         async function move(steps) {
+            const queen = document.getElementById('queen');
+            
             for (let i = 0; i < steps; i++) {
                 pos = (pos + 1) % 16;
                 highlight();
-                await sleep(180);
+                
+                // 皇后棋子跳动动画
+                if (queen) {
+                    queen.classList.add('jumping');
+                    updateQueenPosition();
+                    setTimeout(() => queen.classList.remove('jumping'), 300);
+                }
+                
+                await sleep(300);
             }
             
             const c = cells[pos];
