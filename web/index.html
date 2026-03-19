@@ -6,98 +6,371 @@
     <title>Lucky Spin 18</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: -apple-system, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 10px; }
-        .header { text-align: center; color: white; margin-bottom: 10px; }
-        .header h1 { font-size: 24px; font-weight: 700; }
-        .score-board { background: white; border-radius: 15px; padding: 10px 25px; margin-bottom: 15px; display: flex; gap: 25px; }
-        .score-value { font-size: 24px; font-weight: 700; color: #667eea; }
-        .score-label { font-size: 11px; color: #666; }
-        .game-container { position: relative; width: 340px; height: 340px; margin-bottom: 20px; background: rgba(255,255,255,0.1); border-radius: 20px; padding: 10px; }
-        .cell { position: absolute; width: 55px; height: 55px; border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 10px; font-weight: 600; box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
-        .cell.normal { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; }
-        .cell.empty { background: linear-gradient(135deg, #e0e0e0 0%, #bdbdbd 100%); color: #666; }
-        .cell.bonus { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); color: white; }
-        .cell.prize { background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%); color: #d63031; border: 3px solid #d63031; }
-        .cell.active { box-shadow: 0 0 20px #ffd700; transform: scale(1.1); z-index: 10; }
-        .center-area { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 5; }
-        .dice-box { width: 70px; height: 70px; background: white; border-radius: 15px; display: flex; align-items: center; justify-content: center; font-size: 40px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); border: 3px solid #ddd; }
-        .dice-box.rolling { animation: rollDice 0.6s ease-in-out; }
-        @keyframes rollDice { 0% { transform: rotateY(0deg); } 100% { transform: rotateY(360deg); } }
-        .roll-btn { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; border: none; padding: 15px 50px; border-radius: 50px; font-size: 18px; font-weight: 700; cursor: pointer; }
-        .roll-btn:disabled { background: #ccc; }
-        .action-btn { background: white; border: none; padding: 10px 20px; border-radius: 20px; font-size: 13px; margin: 5px; cursor: pointer; }
-        .message { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 30px; border-radius: 20px; text-align: center; z-index: 100; }
-        .message.show { display: block; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+            min-height: 100vh; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            padding: 15px; 
+        }
+        .header { text-align: center; color: white; margin-bottom: 15px; }
+        .header h1 { font-size: 26px; font-weight: 700; }
+        .score-board { 
+            background: white; 
+            border-radius: 20px; 
+            padding: 15px 40px; 
+            margin-bottom: 20px; 
+            display: flex; 
+            gap: 40px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        .score-item { text-align: center; }
+        .score-value { font-size: 32px; font-weight: 700; color: #667eea; }
+        .score-label { font-size: 12px; color: #666; margin-top: 3px; }
+        
+        /* 游戏板 - 圆角方形布局 */
+        .game-board {
+            width: 320px;
+            height: 320px;
+            position: relative;
+            background: rgba(255,255,255,0.1);
+            border-radius: 20px;
+            padding: 15px;
+        }
+        
+        .cell {
+            position: absolute;
+            width: 45px;
+            height: 45px;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: 600;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            transition: all 0.3s;
+        }
+        
+        .cell.normal { background: linear-gradient(135deg, #ff6b9d 0%, #ff8e53 100%); color: white; }
+        .cell.empty { background: linear-gradient(135deg, #d0d0d0 0%, #b0b0b0 100%); color: #666; }
+        .cell.bonus { background: linear-gradient(135deg, #feca57 0%, #ff9ff3 100%); color: white; }
+        .cell.prize { 
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%); 
+            color: #d63031; 
+            border: 3px solid #ff6b6b;
+            animation: pulse 1.5s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); box-shadow: 0 0 10px rgba(255,107,107,0.5); }
+            50% { transform: scale(1.05); box-shadow: 0 0 20px rgba(255,107,107,0.8); }
+        }
+        
+        .cell.active {
+            box-shadow: 0 0 25px #ffd700, 0 0 50px #ffd700;
+            transform: scale(1.15);
+            z-index: 10;
+        }
+        
+        .cell-num { font-size: 9px; opacity: 0.9; }
+        .cell-points { font-size: 13px; font-weight: 700; }
+        
+        /* 中心骰子区域 */
+        .dice-area {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80px;
+            height: 80px;
+            background: white;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        }
+        
+        /* 3D骰子图片 */
+        .dice-img {
+            width: 60px;
+            height: 60px;
+            object-fit: contain;
+            transition: transform 0.3s;
+        }
+        
+        .dice-img.rolling {
+            animation: diceRotate 0.6s ease-in-out;
+        }
+        
+        @keyframes diceRotate {
+            0% { transform: rotate(0deg) scale(1); }
+            50% { transform: rotate(180deg) scale(1.1); }
+            100% { transform: rotate(360deg) scale(1); }
+        }
+        
+        .controls { margin-top: 25px; text-align: center; }
+        
+        .roll-btn { 
+            background: linear-gradient(135deg, #ff6b9d 0%, #ff8e53 100%); 
+            color: white; 
+            border: none; 
+            padding: 16px 50px; 
+            border-radius: 30px; 
+            font-size: 18px; 
+            font-weight: 700; 
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(255,107,157,0.4);
+            margin-bottom: 15px;
+        }
+        
+        .roll-btn:disabled { background: #ccc; cursor: not-allowed; }
+        
+        .action-btns { display: flex; gap: 15px; justify-content: center; }
+        
+        .action-btn { 
+            background: white; 
+            border: none; 
+            padding: 12px 25px; 
+            border-radius: 25px; 
+            font-size: 14px; 
+            font-weight: 600; 
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
         .overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 99; }
         .overlay.show { display: block; }
+        
+        .message { 
+            display: none; 
+            position: fixed; 
+            top: 50%; 
+            left: 50%; 
+            transform: translate(-50%, -50%); 
+            background: white; 
+            padding: 30px 50px; 
+            border-radius: 20px; 
+            text-align: center; 
+            z-index: 100;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        }
+        .message.show { display: block; }
+        .msg-icon { font-size: 50px; margin-bottom: 10px; }
+        .msg-text { font-size: 18px; font-weight: 600; color: #333; }
     </style>
 </head>
 <body>
     <div class="header"><h1>🎲 Lucky Spin 18</h1></div>
+    
     <div class="score-board">
-        <div><div class="score-value" id="currentScore">10</div><div class="score-label">积分</div></div>
-        <div><div class="score-value" id="totalRounds">0</div><div class="score-label">圈数</div></div>
+        <div class="score-item">
+            <div class="score-value" id="score">10</div>
+            <div class="score-label">积分</div>
+        </div>
+        <div class="score-item">
+            <div class="score-value" id="rounds">0</div>
+            <div class="score-label">圈数</div>
+        </div>
     </div>
-    <div class="game-container">
-        <div id="board"></div>
-        <div class="center-area"><div class="dice-box" id="dice">🎲</div></div>
+    
+    <div class="game-board" id="board">
+        <div class="dice-area">
+            <img class="dice-img" id="dice" src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/2680.svg" alt="dice">
+        </div>
     </div>
-    <button class="roll-btn" id="rollBtn" onclick="rollDice()">🎲 掷骰子 (3分)</button>
-    <div>
-        <button class="action-btn" onclick="watchAd()">📺 广告+5分</button>
-        <button class="action-btn" onclick="buyPoints()">💎 买积分</button>
+    
+    <div class="controls">
+        <button class="roll-btn" id="rollBtn" onclick="roll()">🎲 掷骰子 (消耗3分)</button>
+        <div class="action-btns">
+            <button class="action-btn" onclick="watchAd()">📺 广告 +5分</button>
+            <button class="action-btn" onclick="buy()">💎 买积分</button>
+        </div>
     </div>
+    
     <div class="overlay" id="overlay"></div>
-    <div class="message" id="message"><div id="msgIcon" style="font-size:50px;">🎉</div><div id="msgText">消息</div></div>
+    <div class="message" id="msg">
+        <div class="msg-icon" id="msgIcon">🎉</div>
+        <div class="msg-text" id="msgText">消息</div>
+    </div>
+
     <script>
-        let score = 10, pos = 0, rounds = 0, rolling = false;
-        const diceFaces = ['', '⚀', '⚁', '⚂', '⚃', '⚄', '⚅'];
+        // 16个格子配置 (4x4外围)
         let cells = [
-            {p:1,t:'normal'},{p:2,t:'normal'},{p:0,t:'empty'},{p:1,t:'normal'},{p:3,t:'bonus'},{p:0,t:'empty'},
-            {p:1,t:'normal'},{p:0,t:'prize'},{p:2,t:'normal'},{p:0,t:'empty'},{p:1,t:'normal'},{p:5,t:'bonus'},
-            {p:0,t:'empty'},{p:1,t:'normal'},{p:2,t:'normal'},{p:0,t:'empty'},{p:1,t:'normal'},{p:2,t:'normal'}
+            {id:1,p:1,t:'n'},{id:2,p:2,t:'n'},{id:3,p:0,t:'e'},{id:4,p:1,t:'n'},
+            {id:5,p:3,t:'b'},{id:6,p:0,t:'e'},{id:7,p:1,t:'n'},{id:8,p:0,t:'prize'},
+            {id:9,p:2,t:'n'},{id:10,p:0,t:'e'},{id:11,p:5,t:'b'},{id:12,p:0,t:'e'},
+            {id:13,p:1,t:'n'},{id:14,p:2,t:'n'},{id:15,p:0,t:'e'},{id:16,p:1,t:'n'}
         ];
+        
+        let score = 10, pos = 0, rounds = 0, rolling = false;
+        
+        // 骰子SVG (使用emoji作为备选)
+        const diceSVG = [
+            'https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/2680.svg', // 1
+            'https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/2681.svg', // 2
+            'https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/2682.svg', // 3
+            'https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/2683.svg', // 4
+            'https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/2684.svg', // 5
+            'https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/2685.svg'  // 6
+        ];
+        
+        // 16格正方形布局
         function getPos(i) {
-            const s=60,g=5,x=10,y=10;
-            if(i<6)return{x:x+i*(s+g),y:y};
-            if(i<12)return{x:x+5*(s+g),y:y+(i-5)*(s+g)};
-            return{x:x+(17-i)*(s+g),y:y+5*(s+g)};
+            const s = 50, gap = 8, x = 20, y = 20;
+            // 上边4格
+            if (i < 4) return {x: x + i * (s + gap), y: y};
+            // 右边4格
+            if (i < 8) return {x: x + 3 * (s + gap), y: y + (i - 3) * (s + gap)};
+            // 下边4格
+            if (i < 12) return {x: x + (11 - i) * (s + gap), y: y + 3 * (s + gap)};
+            // 左边4格
+            return {x: x, y: y + (15 - i) * (s + gap)};
         }
+        
         function init() {
-            const b=document.getElementById('board');b.innerHTML='';
-            cells.forEach((c,i)=>{
-                const p=getPos(i),el=document.createElement('div');
-                el.className='cell '+c.t;el.style.left=p.x+'px';el.style.top=p.y+'px';el.id='c'+i;
-                el.innerHTML=c.t=='prize'?'🎁':`<div style="font-size:9px;">${i+1}</div><div>${c.p>0?'+'+c.p:c.p}</div>`;
+            const b = document.getElementById('board');
+            // 保留骰子区域，删除旧格子
+            const diceArea = b.querySelector('.dice-area');
+            b.innerHTML = '';
+            b.appendChild(diceArea);
+            
+            cells.forEach((c, i) => {
+                const p = getPos(i);
+                const el = document.createElement('div');
+                el.className = 'cell ' + (c.t === 'n' ? 'normal' : c.t === 'e' ? 'empty' : c.t === 'b' ? 'bonus' : 'prize');
+                el.style.left = p.x + 'px';
+                el.style.top = p.y + 'px';
+                el.id = 'c' + i;
+                el.innerHTML = c.t === 'prize' ? '<div style="font-size:22px;">🎁</div>' : `<div class="cell-num">${c.id}</div><div class="cell-points">${c.p > 0 ? '+' + c.p : c.p}</div>`;
                 b.appendChild(el);
             });
-            document.querySelectorAll('.cell').forEach(c=>c.classList.remove('active'));
-            document.getElementById('c'+pos).classList.add('active');
+            highlight();
         }
-        async function rollDice() {
-            if(rolling)return;if(score<3){show('😅','积分不足');return;}
-            rolling=true;score-=3;document.getElementById('currentScore').textContent=score;
-            const d=document.getElementById('dice'),btn=document.getElementById('rollBtn');
-            btn.disabled=true;d.classList.add('rolling');
-            for(let i=0;i<10;i++){d.textContent=diceFaces[Math.floor(Math.random()*6)+1];await sleep(60);}
+        
+        function highlight() {
+            document.querySelectorAll('.cell').forEach(c => c.classList.remove('active'));
+            document.getElementById('c' + pos).classList.add('active');
+        }
+        
+        async function roll() {
+            if (rolling) return;
+            if (score < 3) { show('😅', '积分不足！'); return; }
+            
+            rolling = true;
+            score -= 3;
+            document.getElementById('score').textContent = score;
+            
+            const d = document.getElementById('dice');
+            const btn = document.getElementById('rollBtn');
+            btn.disabled = true;
+            d.classList.add('rolling');
+            
+            // 快速切换骰子
+            for (let i = 0; i < 10; i++) {
+                d.src = diceSVG[Math.floor(Math.random() * 6)];
+                await sleep(60);
+            }
+            
             d.classList.remove('rolling');
-            const v=Math.floor(Math.random()*6)+1;d.textContent=diceFaces[v];
-            await move(v);btn.disabled=false;rolling=false;
+            const v = Math.floor(Math.random() * 6) + 1;
+            d.src = diceSVG[v - 1];
+            
+            await move(v);
+            btn.disabled = false;
+            rolling = false;
         }
-        async function move(s) {
-            for(let i=0;i<s;i++){pos=(pos+1)%18;init();await sleep(200);}
-            if(pos<s){rounds++;document.getElementById('totalRounds').textContent=rounds;shuffle();}
-            const c=cells[pos];
-            if(c.t=='prize')setTimeout(lottery,500);
-            else if(c.p>0){score+=c.p;document.getElementById('currentScore').textContent=score;show('🎉','+'+c.p+'分');}
-            else show('😅','空白格');
+        
+        async function move(steps) {
+            for (let i = 0; i < steps; i++) {
+                pos = (pos + 1) % 16;
+                highlight();
+                await sleep(200);
+            }
+            
+            if (pos < steps) {
+                rounds++;
+                document.getElementById('rounds').textContent = rounds;
+                shuffle();
+            }
+            
+            const c = cells[pos];
+            if (c.t === 'prize') {
+                setTimeout(lottery, 500);
+            } else if (c.p > 0) {
+                score += c.p;
+                document.getElementById('score').textContent = score;
+                show('🎉', '+' + c.p + '分！');
+            } else {
+                show('😅', '空白格');
+            }
         }
-        function shuffle(){const p=cells.find(c=>c.t=='prize'),o=cells.filter(c=>c.t!='prize').sort(()=>Math.random()-0.5);o.splice(Math.floor(Math.random()*18),0,p);cells=o;init();show('🔄','格子变化');}
-        function lottery(){const r=Math.random(),p=[{n:'iPhone',pr:0.0001,i:'📱'},{n:'AirPods',pr:0.005,i:'🎧'},{n:'充电宝',pr:0.05,i:'🔋'},{n:'支架',pr:0.20,i:'📲'},{n:'10分',pr:0.7449,i:'💎'}];let c=0,w=p[4];for(const x of p){c+=x.pr;if(r<=c){w=x;break;}}if(w.n=='10分'){score+=10;document.getElementById('currentScore').textContent=score;}show(w.i,w.n);}
-        function show(i,t){document.getElementById('msgIcon').textContent=i;document.getElementById('msgText').textContent=t;document.getElementById('overlay').classList.add('show');document.getElementById('message').classList.add('show');setTimeout(()=>{document.getElementById('overlay').classList.remove('show');document.getElementById('message').classList.remove('show');},2000);}
-        function watchAd(){show('📺','+5分');setTimeout(()=>{score+=5;document.getElementById('currentScore').textContent=score;},2000);}
-        function buyPoints(){const c=prompt('1.10分-1元\n2.100分-6元\n3.500分-25元');if(c=='1')score+=10;if(c=='2')score+=100;if(c=='3')score+=500;document.getElementById('currentScore').textContent=score;}
-        function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
+        
+        function shuffle() {
+            const prize = cells.find(c => c.t === 'prize');
+            const others = cells.filter(c => c.t !== 'prize').sort(() => Math.random() - 0.5);
+            others.splice(Math.floor(Math.random() * 16), 0, prize);
+            cells = others;
+            init();
+            show('🔄', '格子变化！');
+        }
+        
+        function lottery() {
+            const r = Math.random();
+            const prizes = [
+                {n: 'iPhone 16', p: 0.0001, i: '📱'},
+                {n: 'AirPods', p: 0.005, i: '🎧'},
+                {n: '充电宝', p: 0.05, i: '🔋'},
+                {n: '支架', p: 0.20, i: '📲'},
+                {n: '10积分', p: 0.7449, i: '💎'}
+            ];
+            let c = 0, won = prizes[4];
+            for (const x of prizes) {
+                c += x.p;
+                if (r <= c) { won = x; break; }
+            }
+            if (won.n === '10积分') {
+                score += 10;
+                document.getElementById('score').textContent = score;
+            }
+            show(won.i, '中奖：' + won.n);
+        }
+        
+        function show(icon, text) {
+            document.getElementById('msgIcon').textContent = icon;
+            document.getElementById('msgText').textContent = text;
+            document.getElementById('overlay').classList.add('show');
+            document.getElementById('msg').classList.add('show');
+            setTimeout(() => {
+                document.getElementById('overlay').classList.remove('show');
+                document.getElementById('msg').classList.remove('show');
+            }, 2000);
+        }
+        
+        function watchAd() {
+            show('📺', '观看广告 +5分');
+            setTimeout(() => {
+                score += 5;
+                document.getElementById('score').textContent = score;
+            }, 2000);
+        }
+        
+        function buy() {
+            const c = prompt('购买积分：\n1. 10分 - ¥1\n2. 100分 - ¥6\n3. 500分 - ¥25\n请输入1/2/3：');
+            if (c === '1') score += 10;
+            if (c === '2') score += 100;
+            if (c === '3') score += 500;
+            document.getElementById('score').textContent = score;
+        }
+        
+        function sleep(ms) {
+            return new Promise(r => setTimeout(r, ms));
+        }
+        
         init();
     </script>
 </body>
