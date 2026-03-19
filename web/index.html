@@ -3,754 +3,102 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lucky Spin 18 - 幸运转18</title>
+    <title>Lucky Spin 18</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 20px;
-        }
-        
-        .header {
-            text-align: center;
-            color: white;
-            margin-bottom: 20px;
-        }
-        
-        .header h1 {
-            font-size: 32px;
-            font-weight: 700;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-        }
-        
-        .header p {
-            font-size: 14px;
-            opacity: 0.9;
-            margin-top: 5px;
-        }
-        
-        .score-board {
-            background: white;
-            border-radius: 20px;
-            padding: 15px 30px;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-            display: flex;
-            gap: 30px;
-        }
-        
-        .score-item {
-            text-align: center;
-        }
-        
-        .score-value {
-            font-size: 28px;
-            font-weight: 700;
-            color: #667eea;
-        }
-        
-        .score-label {
-            font-size: 12px;
-            color: #666;
-            margin-top: 2px;
-        }
-        
-        .game-container {
-            position: relative;
-            width: 350px;
-            height: 350px;
-            margin-bottom: 30px;
-        }
-        
-        .board {
-            width: 100%;
-            height: 100%;
-            position: relative;
-        }
-        
-        .cell {
-            position: absolute;
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            font-size: 11px;
-            font-weight: 600;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-            transition: all 0.3s;
-        }
-        
-        .cell.normal {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            color: white;
-        }
-        
-        .cell.empty {
-            background: linear-gradient(135deg, #e0e0e0 0%, #bdbdbd 100%);
-            color: #666;
-        }
-        
-        .cell.bonus {
-            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
-            color: white;
-        }
-        
-        .cell.prize {
-            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
-            color: #d63031;
-            border: 3px solid #d63031;
-            animation: pulse 1.5s infinite;
-        }
-        
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-        }
-        
-        .cell.active {
-            box-shadow: 0 0 20px #ffd700, 0 0 40px #ffd700;
-            transform: scale(1.15);
-            z-index: 10;
-        }
-        
-        .cell-number {
-            font-size: 10px;
-            opacity: 0.7;
-        }
-        
-        .cell-points {
-            font-size: 14px;
-            font-weight: 700;
-        }
-        
-        .center-area {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 120px;
-            height: 120px;
-            background: white;
-            border-radius: 50%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-            z-index: 5;
-        }
-        
-        /* 3D 骰子样式 */
-        .dice-container {
-            width: 60px;
-            height: 60px;
-            perspective: 200px;
-        }
-        
-        .dice {
-            width: 100%;
-            height: 100%;
-            position: relative;
-            transform-style: preserve-3d;
-            transition: transform 0.5s ease-out;
-        }
-        
-        .dice.rolling {
-            animation: roll3d 0.8s ease-in-out;
-        }
-        
-        @keyframes roll3d {
-            0% { transform: rotateX(0deg) rotateY(0deg) rotateZ(0deg); }
-            25% { transform: rotateX(180deg) rotateY(90deg) rotateZ(45deg); }
-            50% { transform: rotateX(360deg) rotateY(180deg) rotateZ(90deg); }
-            75% { transform: rotateX(540deg) rotateY(270deg) rotateZ(135deg); }
-            100% { transform: rotateX(720deg) rotateY(360deg) rotateZ(180deg); }
-        }
-        
-        .dice-face {
-            position: absolute;
-            width: 60px;
-            height: 60px;
-            background: linear-gradient(135deg, #fff 0%, #f0f0f0 100%);
-            border: 2px solid #ddd;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 28px;
-            font-weight: 700;
-            color: #333;
-            box-shadow: inset 0 0 10px rgba(0,0,0,0.1);
-        }
-        
-        .dice-face:nth-child(1) { transform: rotateY(0deg) translateZ(30px); }
-        .dice-face:nth-child(2) { transform: rotateY(90deg) translateZ(30px); }
-        .dice-face:nth-child(3) { transform: rotateY(180deg) translateZ(30px); }
-        .dice-face:nth-child(4) { transform: rotateY(-90deg) translateZ(30px); }
-        .dice-face:nth-child(5) { transform: rotateX(90deg) translateZ(30px); }
-        .dice-face:nth-child(6) { transform: rotateX(-90deg) translateZ(30px); }
-        
-        /* 骰子点数样式 */
-        .dot {
-            width: 10px;
-            height: 10px;
-            background: #333;
-            border-radius: 50%;
-            position: absolute;
-        }
-        
-        .face-1 .dot:nth-child(1) { top: 50%; left: 50%; transform: translate(-50%, -50%); }
-        
-        .face-2 .dot:nth-child(1) { top: 25%; left: 25%; }
-        .face-2 .dot:nth-child(2) { bottom: 25%; right: 25%; }
-        
-        .face-3 .dot:nth-child(1) { top: 25%; left: 25%; }
-        .face-3 .dot:nth-child(2) { top: 50%; left: 50%; transform: translate(-50%, -50%); }
-        .face-3 .dot:nth-child(3) { bottom: 25%; right: 25%; }
-        
-        .face-4 .dot:nth-child(1) { top: 25%; left: 25%; }
-        .face-4 .dot:nth-child(2) { top: 25%; right: 25%; }
-        .face-4 .dot:nth-child(3) { bottom: 25%; left: 25%; }
-        .face-4 .dot:nth-child(4) { bottom: 25%; right: 25%; }
-        
-        .face-5 .dot:nth-child(1) { top: 25%; left: 25%; }
-        .face-5 .dot:nth-child(2) { top: 25%; right: 25%; }
-        .face-5 .dot:nth-child(3) { top: 50%; left: 50%; transform: translate(-50%, -50%); }
-        .face-5 .dot:nth-child(4) { bottom: 25%; left: 25%; }
-        .face-5 .dot:nth-child(5) { bottom: 25%; right: 25%; }
-        
-        .face-6 .dot:nth-child(1) { top: 25%; left: 25%; }
-        .face-6 .dot:nth-child(2) { top: 25%; right: 25%; }
-        .face-6 .dot:nth-child(3) { top: 50%; left: 25%; transform: translateY(-50%); }
-        .face-6 .dot:nth-child(4) { top: 50%; right: 25%; transform: translateY(-50%); }
-        .face-6 .dot:nth-child(5) { bottom: 25%; left: 25%; }
-        .face-6 .dot:nth-child(6) { bottom: 25%; right: 25%; }
-        
-        .dice-label {
-            font-size: 11px;
-            color: #666;
-            margin-top: 5px;
-        }
-        
-        .controls {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 15px;
-        }
-        
-        .roll-btn {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            color: white;
-            border: none;
-            padding: 18px 60px;
-            border-radius: 50px;
-            font-size: 20px;
-            font-weight: 700;
-            cursor: pointer;
-            box-shadow: 0 4px 15px rgba(245, 87, 108, 0.4);
-            transition: all 0.3s;
-        }
-        
-        .roll-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(245, 87, 108, 0.5);
-        }
-        
-        .roll-btn:active {
-            transform: translateY(0);
-        }
-        
-        .roll-btn:disabled {
-            background: #ccc;
-            cursor: not-allowed;
-            box-shadow: none;
-        }
-        
-        .action-buttons {
-            display: flex;
-            gap: 15px;
-        }
-        
-        .action-btn {
-            background: white;
-            border: none;
-            padding: 12px 25px;
-            border-radius: 25px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            transition: all 0.3s;
-        }
-        
-        .action-btn.watch-ad {
-            color: #667eea;
-        }
-        
-        .action-btn.buy {
-            color: #f5576c;
-        }
-        
-        .action-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-        }
-        
-        .message {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: white;
-            padding: 30px 50px;
-            border-radius: 20px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
-            text-align: center;
-            z-index: 100;
-            display: none;
-        }
-        
-        .message.show {
-            display: block;
-            animation: popIn 0.3s ease-out;
-        }
-        
-        @keyframes popIn {
-            0% { transform: translate(-50%, -50%) scale(0.5); opacity: 0; }
-            100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
-        }
-        
-        .message-icon {
-            font-size: 60px;
-            margin-bottom: 15px;
-        }
-        
-        .message-text {
-            font-size: 18px;
-            font-weight: 600;
-            color: #333;
-            margin-bottom: 10px;
-        }
-        
-        .message-points {
-            font-size: 24px;
-            font-weight: 700;
-            color: #667eea;
-        }
-        
-        .overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0,0,0,0.5);
-            z-index: 99;
-            display: none;
-        }
-        
-        .overlay.show {
-            display: block;
-        }
-        
-        .login-modal {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: white;
-            padding: 30px;
-            border-radius: 20px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
-            z-index: 101;
-            display: none;
-            width: 90%;
-            max-width: 350px;
-        }
-        
-        .login-modal.show {
-            display: block;
-        }
-        
-        .login-modal h2 {
-            text-align: center;
-            margin-bottom: 20px;
-            color: #333;
-        }
-        
-        .login-btn {
-            width: 100%;
-            padding: 15px;
-            margin-bottom: 10px;
-            border: none;
-            border-radius: 10px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-        
-        .login-btn.google {
-            background: #4285f4;
-            color: white;
-        }
-        
-        .login-btn.apple {
-            background: #000;
-            color: white;
-        }
-        
-        .login-btn.phone {
-            background: #667eea;
-            color: white;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 10px; }
+        .header { text-align: center; color: white; margin-bottom: 10px; }
+        .header h1 { font-size: 24px; font-weight: 700; }
+        .score-board { background: white; border-radius: 15px; padding: 10px 25px; margin-bottom: 15px; display: flex; gap: 25px; }
+        .score-value { font-size: 24px; font-weight: 700; color: #667eea; }
+        .score-label { font-size: 11px; color: #666; }
+        .game-container { position: relative; width: 340px; height: 340px; margin-bottom: 20px; background: rgba(255,255,255,0.1); border-radius: 20px; padding: 10px; }
+        .cell { position: absolute; width: 55px; height: 55px; border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 10px; font-weight: 600; box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
+        .cell.normal { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; }
+        .cell.empty { background: linear-gradient(135deg, #e0e0e0 0%, #bdbdbd 100%); color: #666; }
+        .cell.bonus { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); color: white; }
+        .cell.prize { background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%); color: #d63031; border: 3px solid #d63031; }
+        .cell.active { box-shadow: 0 0 20px #ffd700; transform: scale(1.1); z-index: 10; }
+        .center-area { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 5; }
+        .dice-box { width: 70px; height: 70px; background: white; border-radius: 15px; display: flex; align-items: center; justify-content: center; font-size: 40px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); border: 3px solid #ddd; }
+        .dice-box.rolling { animation: rollDice 0.6s ease-in-out; }
+        @keyframes rollDice { 0% { transform: rotateY(0deg); } 100% { transform: rotateY(360deg); } }
+        .roll-btn { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; border: none; padding: 15px 50px; border-radius: 50px; font-size: 18px; font-weight: 700; cursor: pointer; }
+        .roll-btn:disabled { background: #ccc; }
+        .action-btn { background: white; border: none; padding: 10px 20px; border-radius: 20px; font-size: 13px; margin: 5px; cursor: pointer; }
+        .message { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 30px; border-radius: 20px; text-align: center; z-index: 100; }
+        .message.show { display: block; }
+        .overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 99; }
+        .overlay.show { display: block; }
     </style>
 </head>
 <body>
-    <div class="header">
-        <h1>🎲 Lucky Spin 18</h1>
-        <p>掷骰子，赢大奖！</p>
-    </div>
-    
+    <div class="header"><h1>🎲 Lucky Spin 18</h1></div>
     <div class="score-board">
-        <div class="score-item">
-            <div class="score-value" id="currentScore">10</div>
-            <div class="score-label">当前积分</div>
-        </div>
-        <div class="score-item">
-            <div class="score-value" id="totalRounds">0</div>
-            <div class="score-label">已走圈数</div>
-        </div>
+        <div><div class="score-value" id="currentScore">10</div><div class="score-label">积分</div></div>
+        <div><div class="score-value" id="totalRounds">0</div><div class="score-label">圈数</div></div>
     </div>
-    
     <div class="game-container">
-        <div class="board" id="board"></div>
-        <div class="center-area">
-            <div class="dice-container">
-                <div class="dice" id="dice">
-                    <div class="dice-face face-1"><div class="dot"></div></div>
-                    <div class="dice-face face-2"><div class="dot"></div><div class="dot"></div></div>
-                    <div class="dice-face face-3"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
-                    <div class="dice-face face-4"><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
-                    <div class="dice-face face-5"><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
-                    <div class="dice-face face-6"><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
-                </div>
-            </div>
-            <div class="dice-label">骰子</div>
-        </div>
+        <div id="board"></div>
+        <div class="center-area"><div class="dice-box" id="dice">🎲</div></div>
     </div>
-    
-    <div class="controls">
-        <button class="roll-btn" id="rollBtn" onclick="rollDice()">🎲 掷骰子 (消耗3分)</button>
-        <div class="action-buttons">
-            <button class="action-btn watch-ad" onclick="watchAd()">📺 看广告 +5分</button>
-            <button class="action-btn buy" onclick="buyPoints()">💎 购买积分</button>
-        </div>
+    <button class="roll-btn" id="rollBtn" onclick="rollDice()">🎲 掷骰子 (3分)</button>
+    <div>
+        <button class="action-btn" onclick="watchAd()">📺 广告+5分</button>
+        <button class="action-btn" onclick="buyPoints()">💎 买积分</button>
     </div>
-    
     <div class="overlay" id="overlay"></div>
-    
-    <div class="message" id="message">
-        <div class="message-icon" id="messageIcon">🎉</div>
-        <div class="message-text" id="messageText">获得积分！</div>
-        <div class="message-points" id="messagePoints">+3</div>
-    </div>
-    
-    <div class="login-modal" id="loginModal">
-        <h2>选择登录方式</h2>
-        <button class="login-btn google" onclick="login('google')">
-            <span>🔍</span> Google 登录
-        </button>
-        <button class="login-btn apple" onclick="login('apple')">
-            <span>🍎</span> Apple 登录
-        </button>
-        <button class="login-btn phone" onclick="login('phone')">
-            <span>📱</span> 手机号登录
-        </button>
-    </div>
-
+    <div class="message" id="message"><div id="msgIcon" style="font-size:50px;">🎉</div><div id="msgText">消息</div></div>
     <script>
-        // 游戏数据
-        let currentScore = 10;
-        let currentPosition = 0;
-        let totalRounds = 0;
-        let isRolling = false;
-        
-        // 18个格子配置
+        let score = 10, pos = 0, rounds = 0, rolling = false;
+        const diceFaces = ['', '⚀', '⚁', '⚂', '⚃', '⚄', '⚅'];
         let cells = [
-            { id: 1, points: 1, type: 'normal' },
-            { id: 2, points: 2, type: 'normal' },
-            { id: 3, points: 0, type: 'empty' },
-            { id: 4, points: 1, type: 'normal' },
-            { id: 5, points: 3, type: 'bonus' },
-            { id: 6, points: 0, type: 'empty' },
-            { id: 7, points: 1, type: 'normal' },
-            { id: 8, points: 0, type: 'prize', name: '🎁' },
-            { id: 9, points: 2, type: 'normal' },
-            { id: 10, points: 0, type: 'empty' },
-            { id: 11, points: 1, type: 'normal' },
-            { id: 12, points: 5, type: 'bonus' },
-            { id: 13, points: 0, type: 'empty' },
-            { id: 14, points: 1, type: 'normal' },
-            { id: 15, points: 2, type: 'normal' },
-            { id: 16, points: 0, type: 'empty' },
-            { id: 17, points: 1, type: 'normal' },
-            { id: 18, points: 2, type: 'normal' }
+            {p:1,t:'normal'},{p:2,t:'normal'},{p:0,t:'empty'},{p:1,t:'normal'},{p:3,t:'bonus'},{p:0,t:'empty'},
+            {p:1,t:'normal'},{p:0,t:'prize'},{p:2,t:'normal'},{p:0,t:'empty'},{p:1,t:'normal'},{p:5,t:'bonus'},
+            {p:0,t:'empty'},{p:1,t:'normal'},{p:2,t:'normal'},{p:0,t:'empty'},{p:1,t:'normal'},{p:2,t:'normal'}
         ];
-        
-        // 初始化游戏板
-        function initBoard() {
-            const board = document.getElementById('board');
-            board.innerHTML = '';
-            
-            const radius = 140;
-            const centerX = 175;
-            const centerY = 175;
-            
-            cells.forEach((cell, index) => {
-                const angle = (index * 20 - 90) * (Math.PI / 180);
-                const x = centerX + radius * Math.cos(angle) - 25;
-                const y = centerY + radius * Math.sin(angle) - 25;
-                
-                const cellEl = document.createElement('div');
-                cellEl.className = `cell ${cell.type}`;
-                cellEl.style.left = `${x}px`;
-                cellEl.style.top = `${y}px`;
-                cellEl.id = `cell-${index}`;
-                
-                if (cell.type === 'prize') {
-                    cellEl.innerHTML = `<div class="cell-points">${cell.name}</div>`;
-                } else {
-                    cellEl.innerHTML = `
-                        <div class="cell-number">${cell.id}</div>
-                        <div class="cell-points">${cell.points > 0 ? '+' + cell.points : cell.points}</div>
-                    `;
-                }
-                
-                board.appendChild(cellEl);
-            });
-            
-            highlightCurrentPosition();
+        function getPos(i) {
+            const s=60,g=5,x=10,y=10;
+            if(i<6)return{x:x+i*(s+g),y:y};
+            if(i<12)return{x:x+5*(s+g),y:y+(i-5)*(s+g)};
+            return{x:x+(17-i)*(s+g),y:y+5*(s+g)};
         }
-        
-        // 高亮当前位置
-        function highlightCurrentPosition() {
-            document.querySelectorAll('.cell').forEach(cell => {
-                cell.classList.remove('active');
+        function init() {
+            const b=document.getElementById('board');b.innerHTML='';
+            cells.forEach((c,i)=>{
+                const p=getPos(i),el=document.createElement('div');
+                el.className='cell '+c.t;el.style.left=p.x+'px';el.style.top=p.y+'px';el.id='c'+i;
+                el.innerHTML=c.t=='prize'?'🎁':`<div style="font-size:9px;">${i+1}</div><div>${c.p>0?'+'+c.p:c.p}</div>`;
+                b.appendChild(el);
             });
-            document.getElementById(`cell-${currentPosition}`).classList.add('active');
+            document.querySelectorAll('.cell').forEach(c=>c.classList.remove('active'));
+            document.getElementById('c'+pos).classList.add('active');
         }
-        
-        // 掷骰子
         async function rollDice() {
-            if (isRolling) return;
-            if (currentScore < 3) {
-                showMessage('😅', '积分不足！', '需要3积分，看广告或购买积分');
-                return;
-            }
-            
-            isRolling = true;
-            currentScore -= 3;
-            updateScore();
-            
-            const dice = document.getElementById('dice');
-            const rollBtn = document.getElementById('rollBtn');
-            rollBtn.disabled = true;
-            
-            // 骰子动画
-            dice.classList.add('rolling');
-            let rollCount = 0;
-            const rollInterval = setInterval(() => {
-                dice.textContent = Math.floor(Math.random() * 6) + 1;
-                rollCount++;
-                if (rollCount >= 10) {
-                    clearInterval(rollInterval);
-                    finishRoll();
-                }
-            }, 50);
+            if(rolling)return;if(score<3){show('😅','积分不足');return;}
+            rolling=true;score-=3;document.getElementById('currentScore').textContent=score;
+            const d=document.getElementById('dice'),btn=document.getElementById('rollBtn');
+            btn.disabled=true;d.classList.add('rolling');
+            for(let i=0;i<10;i++){d.textContent=diceFaces[Math.floor(Math.random()*6)+1];await sleep(60);}
+            d.classList.remove('rolling');
+            const v=Math.floor(Math.random()*6)+1;d.textContent=diceFaces[v];
+            await move(v);btn.disabled=false;rolling=false;
         }
-        
-        // 完成掷骰子
-        async function finishRoll() {
-            const dice = document.getElementById('dice');
-            const rollValue = Math.floor(Math.random() * 6) + 1;
-            dice.textContent = rollValue;
-            dice.classList.remove('rolling');
-            
-            // 移动棋子
-            await movePlayer(rollValue);
-            
-            document.getElementById('rollBtn').disabled = false;
-            isRolling = false;
+        async function move(s) {
+            for(let i=0;i<s;i++){pos=(pos+1)%18;init();await sleep(200);}
+            if(pos<s){rounds++;document.getElementById('totalRounds').textContent=rounds;shuffle();}
+            const c=cells[pos];
+            if(c.t=='prize')setTimeout(lottery,500);
+            else if(c.p>0){score+=c.p;document.getElementById('currentScore').textContent=score;show('🎉','+'+c.p+'分');}
+            else show('😅','空白格');
         }
-        
-        // 移动玩家
-        async function movePlayer(steps) {
-            for (let i = 0; i < steps; i++) {
-                currentPosition = (currentPosition + 1) % 18;
-                highlightCurrentPosition();
-                await sleep(200);
-            }
-            
-            // 检查是否完成一圈
-            if (currentPosition < steps - 1 || (steps === 6 && currentPosition < 6)) {
-                totalRounds++;
-                document.getElementById('totalRounds').textContent = totalRounds;
-                shuffleCells();
-            }
-            
-            // 处理格子效果
-            handleCellEffect();
-        }
-        
-        // 处理格子效果
-        function handleCellEffect() {
-            const cell = cells[currentPosition];
-            
-            if (cell.type === 'prize') {
-                // 进入抽奖
-                setTimeout(() => {
-                    enterLottery();
-                }, 500);
-            } else if (cell.points > 0) {
-                currentScore += cell.points;
-                updateScore();
-                showMessage('🎉', '获得积分！', `+${cell.points}`);
-            } else {
-                showMessage('😅', '空白格子', '没有积分');
-            }
-        }
-        
-        // 打乱格子
-        function shuffleCells() {
-            // 保留抽奖格，其他打乱
-            const prizeCell = cells.find(c => c.type === 'prize');
-            const otherCells = cells.filter(c => c.type !== 'prize').sort(() => Math.random() - 0.5);
-            
-            // 随机插入抽奖格位置
-            const prizeIndex = Math.floor(Math.random() * 18);
-            otherCells.splice(prizeIndex, 0, prizeCell);
-            
-            cells = otherCells;
-            initBoard();
-            
-            showMessage('🔄', '新一圈开始！', '格子位置已变化');
-        }
-        
-        // 进入抽奖
-        function enterLottery() {
-            const prizes = [
-                { name: 'iPhone 16 Pro', probability: 0.0001, icon: '📱' },
-                { name: 'AirPods Pro 2', probability: 0.005, icon: '🎧' },
-                { name: '小米充电宝', probability: 0.05, icon: '🔋' },
-                { name: '手机支架', probability: 0.20, icon: '📲' },
-                { name: '10积分', probability: 0.7449, icon: '💎' }
-            ];
-            
-            const random = Math.random();
-            let cumulative = 0;
-            let wonPrize = prizes[prizes.length - 1];
-            
-            for (const prize of prizes) {
-                cumulative += prize.probability;
-                if (random <= cumulative) {
-                    wonPrize = prize;
-                    break;
-                }
-            }
-            
-            if (wonPrize.name === '10积分') {
-                currentScore += 10;
-                updateScore();
-            }
-            
-            showMessage(wonPrize.icon, '恭喜中奖！', wonPrize.name);
-        }
-        
-        // 显示消息
-        function showMessage(icon, text, subtext) {
-            const overlay = document.getElementById('overlay');
-            const message = document.getElementById('message');
-            
-            document.getElementById('messageIcon').textContent = icon;
-            document.getElementById('messageText').textContent = text;
-            document.getElementById('messagePoints').textContent = subtext;
-            
-            overlay.classList.add('show');
-            message.classList.add('show');
-            
-            setTimeout(() => {
-                overlay.classList.remove('show');
-                message.classList.remove('show');
-            }, 2000);
-        }
-        
-        // 更新分数显示
-        function updateScore() {
-            document.getElementById('currentScore').textContent = currentScore;
-        }
-        
-        // 看广告
-        function watchAd() {
-            showMessage('📺', '观看广告中...', '+5积分');
-            setTimeout(() => {
-                currentScore += 5;
-                updateScore();
-            }, 2000);
-        }
-        
-        // 购买积分
-        function buyPoints() {
-            const options = ['10积分 - ¥1', '100积分 - ¥6(省¥4)', '500积分 - ¥25(省¥25)'];
-            const choice = prompt('选择购买：\n1. ' + options[0] + '\n2. ' + options[1] + '\n3. ' + options[2] + '\n\n请输入1/2/3:');
-            
-            if (choice === '1') {
-                currentScore += 10;
-            } else if (choice === '2') {
-                currentScore += 100;
-            } else if (choice === '3') {
-                currentScore += 500;
-            }
-            updateScore();
-        }
-        
-        // 登录
-        function login(provider) {
-            document.getElementById('loginModal').classList.remove('show');
-            document.getElementById('overlay').classList.remove('show');
-            showMessage('✅', '登录成功！', `通过 ${provider} 登录`);
-        }
-        
-        // 辅助函数
-        function sleep(ms) {
-            return new Promise(resolve => setTimeout(resolve, ms));
-        }
-        
-        // 初始化
-        initBoard();
-        
-        // 显示登录（首次访问）
-        setTimeout(() => {
-            document.getElementById('overlay').classList.add('show');
-            document.getElementById('loginModal').classList.add('show');
-        }, 1000);
+        function shuffle(){const p=cells.find(c=>c.t=='prize'),o=cells.filter(c=>c.t!='prize').sort(()=>Math.random()-0.5);o.splice(Math.floor(Math.random()*18),0,p);cells=o;init();show('🔄','格子变化');}
+        function lottery(){const r=Math.random(),p=[{n:'iPhone',pr:0.0001,i:'📱'},{n:'AirPods',pr:0.005,i:'🎧'},{n:'充电宝',pr:0.05,i:'🔋'},{n:'支架',pr:0.20,i:'📲'},{n:'10分',pr:0.7449,i:'💎'}];let c=0,w=p[4];for(const x of p){c+=x.pr;if(r<=c){w=x;break;}}if(w.n=='10分'){score+=10;document.getElementById('currentScore').textContent=score;}show(w.i,w.n);}
+        function show(i,t){document.getElementById('msgIcon').textContent=i;document.getElementById('msgText').textContent=t;document.getElementById('overlay').classList.add('show');document.getElementById('message').classList.add('show');setTimeout(()=>{document.getElementById('overlay').classList.remove('show');document.getElementById('message').classList.remove('show');},2000);}
+        function watchAd(){show('📺','+5分');setTimeout(()=>{score+=5;document.getElementById('currentScore').textContent=score;},2000);}
+        function buyPoints(){const c=prompt('1.10分-1元\n2.100分-6元\n3.500分-25元');if(c=='1')score+=10;if(c=='2')score+=100;if(c=='3')score+=500;document.getElementById('currentScore').textContent=score;}
+        function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
+        init();
     </script>
 </body>
 </html>
