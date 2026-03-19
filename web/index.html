@@ -377,13 +377,24 @@
             renderer.render(scene, camera);
         }
         
-        // 格子位置
+        // 18格布局: 顶部1 + 中间4x4(16格) + 底部1
         function getPos(i) {
-            const s = 54, gap = 6, startX = 40, startY = 50;
-            if (i === 0) return {x: startX + 1.5 * (s + gap), y: 10};
-            if (i === 17) return {x: startX + 1.5 * (s + gap), y: startY + 4 * (s + gap)};
-            const row = Math.floor((i - 1) / 4);
-            const col = (i - 1) % 4;
+            const s = 54, gap = 8, startX = 45, startY = 60;
+            
+            // 第0格 - 顶部居中
+            if (i === 0) return {x: startX + 1.5 * (s + gap), y: 8};
+            
+            // 第17格 - 底部居中
+            if (i === 17) return {x: startX + 1.5 * (s + gap), y: startY + 4 * (s + gap) + 5};
+            
+            // 中间16格 (i=1到16) - 4x4网格
+            // i=1,2,3,4 第一行
+            // i=5,6,7,8 第二行
+            // i=9,10,11,12 第三行
+            // i=13,14,15,16 第四行
+            const gridIndex = i - 1; // 0-15
+            const row = Math.floor(gridIndex / 4);
+            const col = gridIndex % 4;
             return {x: startX + col * (s + gap), y: startY + row * (s + gap)};
         }
         
