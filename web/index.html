@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lucky Spin 18 - 豪华版</title>
+    <title>Lucky Spin 16 - 豪华抽奖</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Roboto:wght@400;700&display=swap');
@@ -18,14 +18,12 @@
             flex-direction: column;
             align-items: center;
             padding: 10px;
-            overflow-x: hidden;
         }
         
-        /* 标题 */
         .header { 
             text-align: center; 
-            margin-bottom: 15px;
-            padding: 15px 40px;
+            margin-bottom: 10px;
+            padding: 12px 35px;
             background: linear-gradient(135deg, rgba(255,215,0,0.1) 0%, rgba(255,215,0,0.05) 100%);
             border: 2px solid rgba(255,215,0,0.3);
             border-radius: 50px;
@@ -34,114 +32,87 @@
         
         .header h1 { 
             font-family: 'Cinzel', serif;
-            font-size: 28px;
+            font-size: 26px;
             background: linear-gradient(135deg, #ffd700 0%, #ffed4e 50%, #ffd700 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            text-shadow: 0 0 30px rgba(255,215,0,0.5);
             letter-spacing: 3px;
         }
         
-        /* 分数面板 */
+        /* 奖品展示栏 */
+        .prizes-showcase {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            padding: 10px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 15px;
+            border: 1px solid rgba(255,215,0,0.2);
+        }
+        
+        .prize-item {
+            text-align: center;
+            padding: 8px 12px;
+            background: linear-gradient(135deg, rgba(255,215,0,0.1) 0%, rgba(255,215,0,0.05) 100%);
+            border-radius: 10px;
+            border: 1px solid rgba(255,215,0,0.3);
+        }
+        
+        .prize-icon { font-size: 28px; }
+        .prize-name { font-size: 10px; color: #ffd700; margin-top: 3px; }
+        .prize-prob { font-size: 9px; color: #aaa; }
+        
         .score-board { 
             display: flex;
-            gap: 30px;
-            margin-bottom: 20px;
+            gap: 25px;
+            margin-bottom: 15px;
         }
         
         .score-box {
             background: linear-gradient(135deg, rgba(0,0,0,0.6) 0%, rgba(40,20,60,0.8) 100%);
             border: 2px solid #ffd700;
             border-radius: 15px;
-            padding: 12px 30px;
+            padding: 10px 25px;
             text-align: center;
-            box-shadow: 0 0 20px rgba(255,215,0,0.3), inset 0 0 20px rgba(255,215,0,0.1);
+            box-shadow: 0 0 20px rgba(255,215,0,0.3);
         }
         
-        .score-value { 
-            font-size: 36px; 
-            font-weight: 700; 
-            color: #ffd700;
-            text-shadow: 0 0 20px rgba(255,215,0,0.8);
-        }
+        .score-value { font-size: 32px; font-weight: 700; color: #ffd700; }
+        .score-label { font-size: 10px; color: #aaa; text-transform: uppercase; }
         
-        .score-label { 
-            font-size: 11px; 
-            color: #aaa;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            margin-top: 3px;
-        }
-        
-        /* 游戏棋盘 */
+        /* 游戏棋盘 - 4x4 */
         .game-board {
-            width: 360px;
-            height: 420px;
+            width: 300px;
+            height: 300px;
             position: relative;
-            background: 
-                radial-gradient(ellipse at center, rgba(139,69,19,0.3) 0%, transparent 70%),
-                linear-gradient(135deg, #2d1b4e 0%, #1a0a2e 100%);
+            background: linear-gradient(135deg, #2d1b4e 0%, #1a0a2e 100%);
             border: 3px solid #ffd700;
             border-radius: 20px;
             padding: 15px;
-            box-shadow: 
-                0 0 40px rgba(255,215,0,0.3),
-                inset 0 0 60px rgba(0,0,0,0.5);
+            box-shadow: 0 0 40px rgba(255,215,0,0.3);
         }
         
-        /* 棋盘木纹效果 */
-        .game-board::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: repeating-linear-gradient(
-                90deg,
-                transparent,
-                transparent 2px,
-                rgba(139,69,19,0.1) 2px,
-                rgba(139,69,19,0.1) 4px
-            );
-            border-radius: 17px;
-            pointer-events: none;
-        }
-        
-        /* 格子 */
         .cell {
             position: absolute;
-            width: 52px;
-            height: 52px;
+            width: 55px;
+            height: 55px;
             border-radius: 12px;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            font-size: 9px;
+            font-size: 10px;
             font-weight: 700;
-            box-shadow: 
-                0 4px 8px rgba(0,0,0,0.4),
-                inset 0 2px 4px rgba(255,255,255,0.2);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.4);
             transition: all 0.3s;
             border: 2px solid rgba(255,255,255,0.1);
         }
         
-        .cell.normal { 
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-        }
-        
-        .cell.empty { 
-            background: linear-gradient(135deg, #4a5568 0%, #2d3748 100%);
-            color: #718096;
-        }
-        
-        .cell.bonus { 
-            background: linear-gradient(135deg, #f6ad55 0%, #ed8936 100%);
-            color: white;
-            border-color: #ffd700;
-        }
-        
+        .cell.normal { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
+        .cell.empty { background: linear-gradient(135deg, #4a5568 0%, #2d3748 100%); color: #718096; }
+        .cell.bonus { background: linear-gradient(135deg, #f6ad55 0%, #ed8936 100%); color: white; border-color: #ffd700; }
         .cell.prize { 
-            background: linear-gradient(135deg, #ff6b9d 0%, #c44569 100%);
+            background: linear-gradient(135deg, #ff6b9d 0%, #c44569 100%); 
             color: white;
             border: 3px solid #ffd700;
             animation: glow 2s infinite;
@@ -149,146 +120,288 @@
         
         @keyframes glow {
             0%, 100% { box-shadow: 0 0 20px rgba(255,215,0,0.6); }
-            50% { box-shadow: 0 0 40px rgba(255,215,0,1), 0 0 60px rgba(255,215,0,0.5); }
+            50% { box-shadow: 0 0 40px rgba(255,215,0,1); }
         }
         
-        .cell.active {
-            transform: scale(1.15);
-            z-index: 10;
-            box-shadow: 0 0 30px #ffd700, 0 0 50px #ffd700;
-            border-color: #ffd700;
-        }
+        .cell.active { transform: scale(1.15); box-shadow: 0 0 30px #ffd700; z-index: 10; border-color: #ffd700; }
+        .cell-num { font-size: 9px; opacity: 0.8; }
+        .cell-points { font-size: 14px; }
         
-        .cell-num { font-size: 8px; opacity: 0.8; margin-bottom: 2px; }
-        .cell-points { font-size: 14px; text-shadow: 0 2px 4px rgba(0,0,0,0.3); }
-        
-        /* Three.js 骰子容器 */
+        /* 骰子画布 */
         #dice-canvas {
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 120px;
-            height: 120px;
+            width: 100px;
+            height: 100px;
             z-index: 100;
             pointer-events: none;
         }
         
-        /* 控制按钮 */
-        .controls { margin-top: 25px; text-align: center; }
+        .controls { margin-top: 20px; text-align: center; }
         
         .roll-btn { 
             background: linear-gradient(135deg, #ffd700 0%, #ffed4e 50%, #ffd700 100%);
             color: #1a0a2e;
             border: none;
-            padding: 18px 50px;
+            padding: 16px 45px;
             border-radius: 50px;
-            font-size: 18px;
+            font-size: 17px;
             font-weight: 700;
             cursor: pointer;
-            box-shadow: 
-                0 6px 20px rgba(255,215,0,0.4),
-                0 0 40px rgba(255,215,0,0.2);
+            box-shadow: 0 6px 20px rgba(255,215,0,0.4);
             text-transform: uppercase;
-            letter-spacing: 2px;
-            transition: all 0.3s;
+            letter-spacing: 1px;
         }
         
-        .roll-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(255,215,0,0.6), 0 0 50px rgba(255,215,0,0.3);
-        }
+        .roll-btn:disabled { background: #4a5568; color: #718096; cursor: not-allowed; }
         
-        .roll-btn:disabled { 
-            background: #4a5568; 
-            color: #718096;
-            box-shadow: none;
-            cursor: not-allowed;
-        }
-        
-        .action-btns { 
-            display: flex; 
-            gap: 15px; 
-            justify-content: center;
-            margin-top: 15px;
-        }
+        .action-btns { display: flex; gap: 12px; justify-content: center; margin-top: 12px; }
         
         .action-btn { 
             background: rgba(255,255,255,0.1);
             border: 2px solid rgba(255,215,0,0.3);
             color: #ffd700;
-            padding: 12px 25px;
+            padding: 10px 20px;
             border-radius: 25px;
-            font-size: 13px;
+            font-size: 12px;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s;
         }
         
-        .action-btn:hover {
-            background: rgba(255,215,0,0.2);
-            border-color: #ffd700;
-            box-shadow: 0 0 20px rgba(255,215,0,0.3);
+        /* 抽奖页面 */
+        .lottery-page {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(135deg, #1a0a2e 0%, #4a148c 100%);
+            z-index: 200;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            overflow-y: auto;
         }
         
-        /* 弹窗 */
-        .overlay { 
-            display: none; 
-            position: fixed; 
-            top: 0; left: 0; right: 0; bottom: 0; 
-            background: rgba(0,0,0,0.8); 
-            z-index: 99; 
-        }
-        .overlay.show { display: block; }
+        .lottery-page.show { display: flex; }
         
-        .message { 
-            display: none; 
-            position: fixed; 
-            top: 50%; left: 50%; 
-            transform: translate(-50%, -50%); 
-            background: linear-gradient(135deg, #2d1b4e 0%, #1a0a2e 100%);
-            border: 3px solid #ffd700;
-            padding: 40px 60px;
-            border-radius: 20px;
+        .lottery-header {
             text-align: center;
-            z-index: 100;
-            box-shadow: 0 0 60px rgba(255,215,0,0.4);
-        }
-        .message.show { display: block; animation: popIn 0.4s ease-out; }
-        
-        @keyframes popIn {
-            0% { transform: translate(-50%, -50%) scale(0.5); opacity: 0; }
-            100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+            margin-bottom: 20px;
         }
         
-        .msg-icon { font-size: 60px; margin-bottom: 15px; }
-        .msg-text { font-size: 20px; font-weight: 700; color: #ffd700; }
+        .lottery-header h2 {
+            font-family: 'Cinzel', serif;
+            font-size: 28px;
+            color: #ffd700;
+            text-shadow: 0 0 20px rgba(255,215,0,0.5);
+        }
+        
+        .lottery-wheel {
+            width: 280px;
+            height: 280px;
+            border-radius: 50%;
+            background: conic-gradient(
+                from 0deg,
+                #ff6b6b 0deg 72deg,
+                #feca57 72deg 144deg,
+                #48dbfb 144deg 216deg,
+                #ff9ff3 216deg 288deg,
+                #54a0ff 288deg 360deg
+            );
+            border: 8px solid #ffd700;
+            box-shadow: 0 0 40px rgba(255,215,0,0.4);
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .wheel-center {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 700;
+            color: #1a0a2e;
+            box-shadow: 0 0 20px rgba(0,0,0,0.3);
+        }
+        
+        .prize-list {
+            margin-top: 25px;
+            width: 100%;
+            max-width: 350px;
+        }
+        
+        .prize-list h3 {
+            color: #ffd700;
+            text-align: center;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+        
+        .prize-row {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            margin-bottom: 8px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 10px;
+            border: 1px solid rgba(255,215,0,0.2);
+        }
+        
+        .prize-row .icon { font-size: 28px; margin-right: 15px; }
+        .prize-row .info { flex: 1; }
+        .prize-row .name { color: #fff; font-weight: 600; font-size: 15px; }
+        .prize-row .prob { color: #aaa; font-size: 12px; }
+        .prize-row .badge {
+            background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+            color: #1a0a2e;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+        
+        .close-lottery {
+            margin-top: 20px;
+            background: rgba(255,255,255,0.1);
+            border: 2px solid #ffd700;
+            color: #ffd700;
+            padding: 12px 40px;
+            border-radius: 25px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        
+        .message, .overlay { display: none; position: fixed; }
+        .message.show, .overlay.show { display: block; }
+        .overlay { top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); z-index: 99; }
+        .message { top: 50%; left: 50%; transform: translate(-50%, -50%); background: linear-gradient(135deg, #2d1b4e 0%, #1a0a2e 100%); border: 3px solid #ffd700; padding: 30px 50px; border-radius: 20px; text-align: center; z-index: 100; }
+        .msg-icon { font-size: 50px; margin-bottom: 10px; }
+        .msg-text { font-size: 18px; font-weight: 700; color: #ffd700; }
     </style>
 </head>
 <body>
-    <div class="header"><h1>✦ LUCKY SPIN 18 ✦</h1></div>
-    
-    <div class="score-board">
-        <div class="score-box">
-            <div class="score-value" id="score">10</div>
-            <div class="score-label">Credits</div>
+    <!-- 主游戏页面 -->
+    <div id="game-page">
+        <div class="header"><h1>✦ LUCKY SPIN 16 ✦</h1></div>
+        
+        <!-- 奖品展示 -->
+        <div class="prizes-showcase">
+            <div class="prize-item">
+                <div class="prize-icon">📱</div>
+                <div class="prize-name">iPhone 16</div>
+                <div class="prize-prob">0.01%</div>
+            </div>
+            <div class="prize-item">
+                <div class="prize-icon">🎧</div>
+                <div class="prize-name">AirPods</div>
+                <div class="prize-prob">0.5%</div>
+            </div>
+            <div class="prize-item">
+                <div class="prize-icon">🔋</div>
+                <div class="prize-name">充电宝</div>
+                <div class="prize-prob">5%</div>
+            </div>
+            <div class="prize-item">
+                <div class="prize-icon">📲</div>
+                <div class="prize-name">手机支架</div>
+                <div class="prize-prob">20%</div>
+            </div>
+            <div class="prize-item" onclick="openLottery()" style="cursor:pointer;background:rgba(255,215,0,0.2);">
+                <div class="prize-icon">🎁</div>
+                <div class="prize-name">更多奖品</div>
+                <div class="prize-prob">点击查看</div>
+            </div>
         </div>
-        <div class="score-box">
-            <div class="score-value" id="rounds">0</div>
-            <div class="score-label">Rounds</div>
+        
+        <div class="score-board">
+            <div class="score-box">
+                <div class="score-value" id="score">10</div>
+                <div class="score-label">Credits</div>
+            </div>
+            <div class="score-box">
+                <div class="score-value" id="rounds">0</div>
+                <div class="score-label">Rounds</div>
+            </div>
+        </div>
+        
+        <div class="game-board" id="board">
+            <canvas id="dice-canvas"></canvas>
+        </div>
+        
+        <div class="controls">
+            <button class="roll-btn" id="rollBtn" onclick="throwDice()">🎲 ROLL DICE (3)</button>
+            <div class="action-btns">
+                <button class="action-btn" onclick="watchAd()">📺 Watch Ad +5</button>
+                <button class="action-btn" onclick="buy()">💎 Buy Credits</button>
+                <button class="action-btn" onclick="openLottery()">🎁 View Prizes</button>
+            </div>
         </div>
     </div>
     
-    <div class="game-board" id="board">
-        <canvas id="dice-canvas"></canvas>
-    </div>
-    
-    <div class="controls">
-        <button class="roll-btn" id="rollBtn" onclick="throwDice()">🎲 ROLL DICE (3)</button>
-        <div class="action-btns">
-            <button class="action-btn" onclick="watchAd()">📺 Watch Ad +5</button>
-            <button class="action-btn" onclick="buy()">💎 Buy Credits</button>
+    <!-- 抽奖页面 -->
+    <div class="lottery-page" id="lottery-page">
+        <div class="lottery-header">
+            <h2>🎰 PRIZE WHEEL 🎰</h2>
+            <p style="color:#aaa;font-size:14px;margin-top:5px;">Spin to win amazing prizes!</p>
         </div>
+        
+        <div class="lottery-wheel">
+            <div class="wheel-center">SPIN</div>
+        </div>
+        
+        <div class="prize-list">
+            <h3>🏆 All Prizes</h3>
+            <div class="prize-row">
+                <div class="icon">📱</div>
+                <div class="info">
+                    <div class="name">iPhone 16 Pro</div>
+                    <div class="prob">Probability: 0.01%</div>
+                </div>
+                <div class="badge">GRAND</div>
+            </div>
+            <div class="prize-row">
+                <div class="icon">🎧</div>
+                <div class="info">
+                    <div class="name">AirPods Pro 2</div>
+                    <div class="prob">Probability: 0.5%</div>
+                </div>
+                <div class="badge">GOLD</div>
+            </div>
+            <div class="prize-row">
+                <div class="icon">🔋</div>
+                <div class="info">
+                    <div class="name">Power Bank 20000mAh</div>
+                    <div class="prob">Probability: 5%</div>
+                </div>
+                <div class="badge">SILVER</div>
+            </div>
+            <div class="prize-row">
+                <div class="icon">📲</div>
+                <div class="info">
+                    <div class="name">Phone Stand</div>
+                    <div class="prob">Probability: 20%</div>
+                </div>
+                <div class="badge">BRONZE</div>
+            </div>
+            <div class="prize-row">
+                <div class="icon">💎</div>
+                <div class="info">
+                    <div class="name">10 Credits</div>
+                    <div class="prob">Probability: 74.49%</div>
+                </div>
+                <div class="badge">PARTICIPATION</div>
+            </div>
+        </div>
+        
+        <button class="close-lottery" onclick="closeLottery()">← Back to Game</button>
     </div>
     
     <div class="overlay" id="overlay"></div>
@@ -298,109 +411,66 @@
     </div>
 
     <script>
-        // 18个格子配置
+        // 16格配置 (4x4)
         let cells = [
-            {id:1,p:2,t:'bonus'}, {id:2,p:1,t:'n'}, {id:3,p:2,t:'n'}, {id:4,p:0,t:'e'}, {id:5,p:1,t:'n'},
-            {id:6,p:3,t:'b'}, {id:7,p:0,t:'e'}, {id:8,p:1,t:'n'}, {id:9,p:0,t:'prize'},
-            {id:10,p:2,t:'n'}, {id:11,p:0,t:'e'}, {id:12,p:5,t:'b'}, {id:13,p:0,t:'e'},
-            {id:14,p:1,t:'n'}, {id:15,p:2,t:'n'}, {id:16,p:0,t:'e'}, {id:17,p:1,t:'n'}, {id:18,p:3,t:'bonus'}
+            {id:1,p:1,t:'n'}, {id:2,p:2,t:'n'}, {id:3,p:0,t:'e'}, {id:4,p:1,t:'n'},
+            {id:5,p:3,t:'b'}, {id:6,p:0,t:'e'}, {id:7,p:1,t:'n'}, {id:8,p:0,t:'prize'},
+            {id:9,p:2,t:'n'}, {id:10,p:0,t:'e'}, {id:11,p:5,t:'b'}, {id:12,p:0,t:'e'},
+            {id:13,p:1,t:'n'}, {id:14,p:2,t:'n'}, {id:15,p:0,t:'e'}, {id:16,p:1,t:'n'}
         ];
         
         let score = 10, pos = 0, rounds = 0, rolling = false;
         let scene, camera, renderer, dice;
         
-        // 初始化Three.js骰子
+        // 初始化Three.js
         function initDice() {
             const canvas = document.getElementById('dice-canvas');
             scene = new THREE.Scene();
             camera = new THREE.PerspectiveCamera(50, 1, 0.1, 100);
-            camera.position.z = 5;
+            camera.position.z = 4;
             
             renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
-            renderer.setSize(120, 120);
-            renderer.setClearColor(0x000000, 0);
+            renderer.setSize(100, 100);
             
-            // 创建骰子
-            const geometry = new THREE.BoxGeometry(1.5, 1.5, 1.5);
-            
-            // 创建骰子材质（白色底+黑点）
+            const geometry = new THREE.BoxGeometry(1.2, 1.2, 1.2);
             const materials = [];
+            
             for (let i = 0; i < 6; i++) {
-                const canvas = document.createElement('canvas');
-                canvas.width = 128;
-                canvas.height = 128;
-                const ctx = canvas.getContext('2d');
-                
-                // 白色背景
+                const cvs = document.createElement('canvas');
+                cvs.width = 128; cvs.height = 128;
+                const ctx = cvs.getContext('2d');
                 ctx.fillStyle = '#ffffff';
                 ctx.fillRect(0, 0, 128, 128);
-                
-                // 边框
                 ctx.strokeStyle = '#cccccc';
                 ctx.lineWidth = 4;
                 ctx.strokeRect(2, 2, 124, 124);
-                
-                // 画点
                 ctx.fillStyle = '#333333';
-                const dots = i + 1;
-                const positions = [
-                    [], // 0
-                    [[64, 64]], // 1
-                    [[32, 32], [96, 96]], // 2
-                    [[32, 32], [64, 64], [96, 96]], // 3
-                    [[32, 32], [96, 32], [32, 96], [96, 96]], // 4
-                    [[32, 32], [96, 32], [64, 64], [32, 96], [96, 96]], // 5
-                    [[32, 32], [96, 32], [32, 64], [96, 64], [32, 96], [96, 96]] // 6
-                ];
                 
-                positions[dots].forEach(p => {
-                    ctx.beginPath();
-                    ctx.arc(p[0], p[1], 10, 0, Math.PI * 2);
-                    ctx.fill();
-                });
+                const dots = [[],[[64,64]],[[32,32],[96,96]],[[32,32],[64,64],[96,96]],[[32,32],[96,32],[32,96],[96,96]],[[32,32],[96,32],[64,64],[32,96],[96,96]],[[32,32],[96,32],[32,64],[96,64],[32,96],[96,96]]];
+                dots[i+1].forEach(p => { ctx.beginPath(); ctx.arc(p[0], p[1], 10, 0, Math.PI*2); ctx.fill(); });
                 
-                const texture = new THREE.CanvasTexture(canvas);
-                materials.push(new THREE.MeshPhongMaterial({ map: texture }));
+                materials.push(new THREE.MeshPhongMaterial({ map: new THREE.CanvasTexture(cvs) }));
             }
             
             dice = new THREE.Mesh(geometry, materials);
             scene.add(dice);
-            
-            // 灯光
-            const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
-            scene.add(ambientLight);
-            
-            const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
-            directionalLight.position.set(5, 5, 5);
-            scene.add(directionalLight);
-            
+            scene.add(new THREE.AmbientLight(0xffffff, 0.6));
+            const dl = new THREE.DirectionalLight(0xffffff, 0.8);
+            dl.position.set(5, 5, 5);
+            scene.add(dl);
             renderer.render(scene, camera);
         }
         
-        // 18格布局: 顶部1 + 中间4x4(16格) + 底部1
+        // 4x4格子位置
         function getPos(i) {
-            const s = 54, gap = 8, startX = 45, startY = 60;
-            
-            // 第0格 - 顶部居中
-            if (i === 0) return {x: startX + 1.5 * (s + gap), y: 8};
-            
-            // 第17格 - 底部居中
-            if (i === 17) return {x: startX + 1.5 * (s + gap), y: startY + 4 * (s + gap) + 5};
-            
-            // 中间16格 (i=1到16) - 4x4网格
-            // i=1,2,3,4 第一行
-            // i=5,6,7,8 第二行
-            // i=9,10,11,12 第三行
-            // i=13,14,15,16 第四行
-            const gridIndex = i - 1; // 0-15
-            const row = Math.floor(gridIndex / 4);
-            const col = gridIndex % 4;
+            const s = 60, gap = 5, startX = 20, startY = 20;
+            const row = Math.floor(i / 4);
+            const col = i % 4;
             return {x: startX + col * (s + gap), y: startY + row * (s + gap)};
         }
         
         function initBoard() {
             const b = document.getElementById('board');
-            // 保留canvas
             const canvas = document.getElementById('dice-canvas');
             b.innerHTML = '';
             b.appendChild(canvas);
@@ -408,11 +478,11 @@
             cells.forEach((c, i) => {
                 const p = getPos(i);
                 const el = document.createElement('div');
-                el.className = 'cell ' + (c.t === 'n' ? 'normal' : c.t === 'e' ? 'empty' : c.t === 'b' ? 'bonus' : 'prize');
+                el.className = 'cell ' + (c.t==='n'?'normal':c.t==='e'?'empty':c.t==='b'?'bonus':'prize');
                 el.style.left = p.x + 'px';
                 el.style.top = p.y + 'px';
                 el.id = 'c' + i;
-                el.innerHTML = c.t === 'prize' ? '<div style="font-size:22px;">🎁</div>' : `<div class="cell-num">${c.id}</div><div class="cell-points">${c.p > 0 ? '+' + c.p : c.p}</div>`;
+                el.innerHTML = c.t==='prize'?'🎁':`<div class="cell-num">${c.id}</div><div class="cell-points">${c.p>0?'+'+c.p:c.p}</div>`;
                 b.appendChild(el);
             });
             highlight();
@@ -420,157 +490,95 @@
         
         function highlight() {
             document.querySelectorAll('.cell').forEach(c => c.classList.remove('active'));
-            document.getElementById('c' + pos).classList.add('active');
+            document.getElementById('c'+pos).classList.add('active');
         }
         
-        // 投掷骰子动画
+        // 打开/关闭抽奖页面
+        function openLottery() {
+            document.getElementById('lottery-page').classList.add('show');
+        }
+        function closeLottery() {
+            document.getElementById('lottery-page').classList.remove('show');
+        }
+        
         async function throwDice() {
-            if (rolling) return;
-            if (score < 3) { show('😅', 'Not Enough Credits'); return; }
+            if(rolling) return;
+            if(score<3){show('😅','Not Enough Credits');return;}
+            rolling=true;score-=3;document.getElementById('score').textContent=score;
+            document.getElementById('rollBtn').disabled=true;
             
-            rolling = true;
-            score -= 3;
-            document.getElementById('score').textContent = score;
-            document.getElementById('rollBtn').disabled = true;
+            const result=Math.floor(Math.random()*6)+1;
+            const canvas=document.getElementById('dice-canvas');
+            canvas.style.display='block';
             
-            const result = Math.floor(Math.random() * 6) + 1;
-            
-            // 旋转动画
-            const canvas = document.getElementById('dice-canvas');
-            canvas.style.display = 'block';
-            canvas.style.transition = 'all 0.5s ease-out';
-            
-            // 抛出动画
-            let rotation = 0;
-            const animate = () => {
-                rotation += 15;
-                dice.rotation.x = rotation * 0.5;
-                dice.rotation.y = rotation;
-                dice.rotation.z = rotation * 0.3;
-                renderer.render(scene, camera);
-                if (rotation < 720) requestAnimationFrame(animate);
+            let rot=0;
+            const animate=()=>{
+                rot+=20;
+                dice.rotation.set(rot*0.5,rot,rot*0.3);
+                renderer.render(scene,camera);
+                if(rot<720)requestAnimationFrame(animate);
             };
             animate();
-            
             await sleep(1000);
             
-            // 显示结果
-            const rotations = {
-                1: {x: 0, y: 0, z: 0},
-                2: {x: -Math.PI/2, y: 0, z: 0},
-                3: {x: 0, y: Math.PI/2, z: 0},
-                4: {x: 0, y: -Math.PI/2, z: 0},
-                5: {x: Math.PI/2, y: 0, z: 0},
-                6: {x: Math.PI, y: 0, z: 0}
-            };
-            
-            dice.rotation.x = rotations[result].x;
-            dice.rotation.y = rotations[result].y;
-            dice.rotation.z = rotations[result].z;
-            renderer.render(scene, camera);
-            
+            const rots={1:{x:0,y:0,z:0},2:{x:-Math.PI/2,y:0,z:0},3:{x:0,y:Math.PI/2,z:0},4:{x:0,y:-Math.PI/2,z:0},5:{x:Math.PI/2,y:0,z:0},6:{x:Math.PI,y:0,z:0}};
+            dice.rotation.set(rots[result].x,rots[result].y,rots[result].z);
+            renderer.render(scene,camera);
             await sleep(500);
             
-            // 移动骰子到目标
-            const targetPos = getPos((pos + result) % 18);
-            canvas.style.left = (targetPos.x + 26) + 'px';
-            canvas.style.top = (targetPos.y + 26) + 'px';
-            canvas.style.transform = 'translate(-50%, -50%) scale(0.6)';
-            
-            await sleep(500);
-            canvas.style.display = 'none';
-            canvas.style.transform = 'translate(-50%, -50%) scale(1)';
-            canvas.style.left = '50%';
-            canvas.style.top = '50%';
+            const target=getPos((pos+result)%16);
+            canvas.style.transition='all 0.3s';
+            canvas.style.left=(target.x+27)+'px';
+            canvas.style.top=(target.y+27)+'px';
+            canvas.style.transform='translate(-50%,-50%) scale(0.5)';
+            await sleep(300);
+            canvas.style.display='none';
+            canvas.style.transform='translate(-50%,-50%) scale(1)';
+            canvas.style.left='50%';
+            canvas.style.top='50%';
             
             await move(result);
-            document.getElementById('rollBtn').disabled = false;
-            rolling = false;
+            document.getElementById('rollBtn').disabled=false;
+            rolling=false;
         }
         
-        async function move(steps) {
-            for (let i = 0; i < steps; i++) {
-                pos = (pos + 1) % 18;
-                highlight();
-                await sleep(200);
-            }
-            
-            if (pos < steps) {
-                rounds++;
-                document.getElementById('rounds').textContent = rounds;
-                shuffle();
-            }
-            
-            const c = cells[pos];
-            if (c.t === 'prize') setTimeout(lottery, 300);
-            else if (c.p > 0) {
-                score += c.p;
-                document.getElementById('score').textContent = score;
-                show('🎉', '+' + c.p + ' Credits!');
-            } else show('😅', 'Empty Cell');
+        async function move(steps){
+            for(let i=0;i<steps;i++){pos=(pos+1)%16;highlight();await sleep(200);}
+            if(pos<steps){rounds++;document.getElementById('rounds').textContent=rounds;shuffle();}
+            const c=cells[pos];
+            if(c.t==='prize'){openLottery();setTimeout(()=>lottery(),500);}
+            else if(c.p>0){score+=c.p;document.getElementById('score').textContent=score;show('🎉','+'+c.p+' Credits!');}
+            else show('😅','Empty Cell');
         }
         
-        function shuffle() {
-            const prize = cells.find(c => c.t === 'prize');
-            const others = cells.filter(c => c.t !== 'prize').sort(() => Math.random() - 0.5);
-            others.splice(Math.floor(Math.random() * 18), 0, prize);
-            cells = others;
-            initBoard();
-            show('🔄', 'Board Shuffled!');
+        function shuffle(){
+            const prize=cells.find(c=>c.t==='prize');
+            const others=cells.filter(c=>c.t!=='prize').sort(()=>Math.random()-0.5);
+            others.splice(Math.floor(Math.random()*16),0,prize);
+            cells=others;initBoard();show('🔄','Board Shuffled!');
         }
         
-        function lottery() {
-            const r = Math.random();
-            const prizes = [
-                {n: 'iPhone 16 Pro!', p: 0.0001, i: '📱'},
-                {n: 'AirPods Pro!', p: 0.005, i: '🎧'},
-                {n: 'Power Bank', p: 0.05, i: '🔋'},
-                {n: 'Phone Stand', p: 0.20, i: '📲'},
-                {n: '10 Credits', p: 0.7449, i: '💎'}
-            ];
-            let c = 0, w = prizes[4];
-            for (const p of prizes) {
-                c += p.p;
-                if (r <= c) { w = p; break; }
-            }
-            if (w.n === '10 Credits') {
-                score += 10;
-                document.getElementById('score').textContent = score;
-            }
-            show(w.i, 'You Won: ' + w.n);
+        function lottery(){
+            const r=Math.random();
+            const prizes=[{n:'iPhone 16 Pro!',p:0.0001,i:'📱'},{n:'AirPods Pro!',p:0.005,i:'🎧'},{n:'Power Bank',p:0.05,i:'🔋'},{n:'Phone Stand',p:0.20,i:'📲'},{n:'10 Credits',p:0.7449,i:'💎'}];
+            let c=0,w=prizes[4];
+            for(const x of prizes){c+=x.p;if(r<=c){w=x;break;}}
+            if(w.n==='10 Credits'){score+=10;document.getElementById('score').textContent=score;}
+            show(w.i,'You Won: '+w.n);
         }
         
-        function show(icon, text) {
-            document.getElementById('msgIcon').textContent = icon;
-            document.getElementById('msgText').textContent = text;
+        function show(icon,text){
+            document.getElementById('msgIcon').textContent=icon;
+            document.getElementById('msgText').textContent=text;
             document.getElementById('overlay').classList.add('show');
             document.getElementById('msg').classList.add('show');
-            setTimeout(() => {
-                document.getElementById('overlay').classList.remove('show');
-                document.getElementById('msg').classList.remove('show');
-            }, 2500);
+            setTimeout(()=>{document.getElementById('overlay').classList.remove('show');document.getElementById('msg').classList.remove('show');},2500);
         }
         
-        function watchAd() {
-            show('📺', 'Watching Ad...');
-            setTimeout(() => {
-                score += 5;
-                document.getElementById('score').textContent = score;
-                show('💎', '+5 Credits!');
-            }, 2000);
-        }
+        function watchAd(){show('📺','Watching Ad...');setTimeout(()=>{score+=5;document.getElementById('score').textContent=score;show('💎','+5 Credits!');},2000);}
+        function buy(){const c=prompt('Buy Credits:\n1. 10 credits - $0.99\n2. 100 credits - $4.99\n3. 500 credits - $19.99');if(c==='1')score+=10;if(c==='2')score+=100;if(c==='3')score+=500;document.getElementById('score').textContent=score;}
+        function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
         
-        function buy() {
-            const c = prompt('Buy Credits:\n1. 10 credits - $0.99\n2. 100 credits - $4.99\n3. 500 credits - $19.99\n\nEnter 1/2/3:');
-            if (c === '1') score += 10;
-            if (c === '2') score += 100;
-            if (c === '3') score += 500;
-            document.getElementById('score').textContent = score;
-        }
-        
-        function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
-        
-        // 初始化
         initDice();
         initBoard();
     </script>
